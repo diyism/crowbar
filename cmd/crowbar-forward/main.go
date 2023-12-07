@@ -32,7 +32,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/q3k/crowbar"
+	"github.com/diyism/crowbar"
 )
 
 func main() {
