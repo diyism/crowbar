@@ -37,7 +37,7 @@ import (
 
 	"github.com/pborman/uuid"
 
-	"github.com/q3k/crowbar"
+	"github.com/diyism/crowbar"
 )
 
 var nonceMap = map[string][]byte{}
