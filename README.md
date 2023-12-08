@@ -107,9 +107,10 @@ For SSH ProxyCommand integration, place this in your .ssh/config, and then SSH i
 Building from source
 --------------------
 
-I assume you have a working $GOPATH.
-
-    go get github.com/q3k/crowbar/...
+    export GOPATH=`pwd`
+    go get github.com/diyism/crowbar/...
+    cd ./src/github.com/diyism/crowbar
+    //if you want to modify some code, then rebuild
+    go build -o ../../../../bin ./...
 
 crowbar-forward and crowbard will be in $GOPATH/bin.
-
