@@ -46,11 +46,19 @@ type ProxyConnection struct {
 }
 
 func (c *ProxyConnection) Write(b []byte) (int, error) {
-	url_args := fmt.Sprintf("?uuid=" + c.uuid)
+	url_args := fmt.Sprintf("?authuser=0&uuid=" + c.uuid)
 	post_args := url.Values{}
 	post_args.Set("data", base64.StdEncoding.EncodeToString(b))
 
-	resp, err := http.PostForm(c.server + EndpointSync + url_args, post_args)
+	//resp, err := http.PostForm(c.server + EndpointSync + url_args, post_args)
+	req,_ := http.NewRequest("POST", c.server+EndpointSync+url_args, strings.NewReader(post_args.Encode()))
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0")
+	req.Header.Set("x-colab-tunnel", "Google")
+	req.Header.Set("Cookie", "NID=511=YPzREr7SwEG")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
 	if err != nil {
 		return 0, err
 	}
@@ -70,8 +78,16 @@ func (c *ProxyConnection) Write(b []byte) (int, error) {
 }
 
 func (c *ProxyConnection) FillReadBuffer() error {
-	args := fmt.Sprintf("?uuid=" + c.uuid)
-	resp, err := http.Get(c.server + EndpointSync + args)
+	args := fmt.Sprintf("?authuser=0&uuid=" + c.uuid)
+
+	//resp, err := http.Get(c.server + EndpointSync + args)
+	req,_ := http.NewRequest("GET", c.server + EndpointSync + args, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0")
+	req.Header.Set("x-colab-tunnel", "Google")
+	req.Header.Set("Cookie", "NID=511=YPzREr7SwEG")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
 	if err != nil {
 		return err
 	}
@@ -127,8 +143,15 @@ func Connect(server, username, password, remote string) (*ProxyConnection, error
 	}
 	conn := ProxyConnection{server: server}
 
-	args := fmt.Sprintf("?username=%s", username)
-	resp, err := http.Get(conn.server + EndpointAuth + args)
+	args := fmt.Sprintf("?authuser=0&username=%s", username)
+	//resp, err := http.Get(conn.server + EndpointAuth + args)
+	req,_ := http.NewRequest("GET", conn.server + EndpointAuth + args, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0")
+	req.Header.Set("x-colab-tunnel", "Google")
+	req.Header.Set("Cookie", "NID=511=YPzREr7SwEG")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
 	if err != nil {
 		return &ProxyConnection{}, err
 	}
@@ -160,7 +183,13 @@ func Connect(server, username, password, remote string) (*ProxyConnection, error
 	v.Set("remote_port", strings.Split(remote, ":")[1])
 	v.Set("username", username)
 	v.Set("proof", base64.StdEncoding.EncodeToString(hmac))
-	resp, err = http.Get(conn.server + EndpointConnect + "?" + v.Encode())
+	//resp, err = http.Get(conn.server + EndpointConnect + "?authuser=0&" + v.Encode())
+	req,_ = http.NewRequest("GET", conn.server + EndpointConnect + "?authuser=0&" + v.Encode(), nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0")
+	req.Header.Set("x-colab-tunnel", "Google")
+	req.Header.Set("Cookie", "NID=511=YPzREr7SwEG")
+	resp, err = client.Do(req)
+
 	if err != nil {
 		return &ProxyConnection{}, err
 	}
