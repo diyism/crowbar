@@ -112,5 +112,6 @@ Building from source
     cd ./src/github.com/diyism/crowbar
     //if you want to modify some code, then rebuild
     go build -o ../../../../bin ./...
+    install ../../../../bin/* /opt/lib/go/bin           #if /opt/lib/go/bin in $PATH
 
 crowbar-forward and crowbard will be in $GOPATH/bin.
